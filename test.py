@@ -1,56 +1,49 @@
 import pygame
+import sys
 
-class MenuScreen:
-    def __init__(self):
-        self.font = pygame.font.Font(None, 36)
+# Инициализация Pygame
+pygame.init()
 
-    def display(self, screen):
-        screen.fill((255, 255, 255))
-        text = self.font.render("Main Menu", True, (0, 0, 0))
-        screen.blit(text, (200, 200))
+# Установка экрана
+screen = pygame.display.set_mode((400, 300))
+pygame.display.set_caption("Маска изображения с смещением")
 
-class RegistrationScreen:
-    def __init__(self):
-        self.font = pygame.font.Font(None, 36)
+# Загрузка изображения
+image = pygame.image.load("C:/Users/413/Downloads/hexagon-fill-svgrepo-com.svg").convert_alpha()
 
-    def display(self, screen):
-        screen.fill((255, 255, 255))
-        text = self.font.render("Registration Screen", True, (0, 0, 0))
-        screen.blit(text, (150, 200))
+# Создание поверхности для рисования изображения с смещением
+offset_surface = pygame.Surface((image.get_width(), image.get_height()), pygame.SRCALPHA)
+offset_surface.fill((0, 0, 0, 0))  # Заполнение поверхности прозрачным цветом
+offset_x, offset_y = 50, 50  # Смещение по оси X и Y
 
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((600, 400))
-    clock = pygame.time.Clock()
+# Отрисовка изображения на поверхности с смещением
+offset_surface.blit(image, (offset_x, offset_y))
 
-    menu_screen = MenuScreen()
-    registration_screen = RegistrationScreen()
-    current_screen = "menu"  # Начальный экран - меню
+# Создание маски изображения
+mask = pygame.mask.from_surface(image)
 
-    running = True
-    while running:
-        screen.fill((255, 255, 255))
+# Смещение маски на основе смещения отрисовки изображения
+mask_offset = pygame.mask.from_surface(offset_surface)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    # Переключение между экранами при нажатии пробела
-                    if current_screen == "menu":
-                        current_screen = "registration"
-                    else:
-                        current_screen = "menu"
+# Основной цикл
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-        if current_screen == "menu":
-            menu_screen.display(screen)
-        elif current_screen == "registration":
-            registration_screen.display(screen)
+        # Проверка событий нажатия кнопки мыши
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Получение координат мыши
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            # Проверка, попадает ли нажатие в маску изображения с смещением
+            if mask_offset.get_at((mouse_x - offset_x, mouse_y - offset_y)):
+                print("Нажатие на изображение!")
 
-        pygame.display.flip()
-        clock.tick(60)
+    # Очистка экрана
+    screen.fill((255, 255, 255))
+    # Отрисовка изображения с смещением
+    screen.blit(offset_surface, (0, 0))
 
-    pygame.quit()
-
-if __name__ == "__main__":
-    main()
+    # Обновление экрана
+    pygame.display.flip()

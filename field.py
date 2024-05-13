@@ -26,7 +26,7 @@ class Field:
         self.__cols = cols
         self.__game_height = self.__cell_size * self.__rows
         self.__game_width = self.__cell_size * self.__cols
-        self.__field = [[cell.Cell(self.__cell_size, self.CLOSE) for _ in range(self.__cols)] for _ in
+        self.__field = [[cell.Cell(self.__cell_size, self.CLOSE, self.FLAGGED, self.NOMINE) for _ in range(self.__cols)] for _ in
                         range(self.__rows)]
         self.__field_num = [[0 for _ in range(self.__cols)] for _ in range(self.__rows)]
         self.__field_count = [[0 for _ in range(self.__cols)] for _ in range(self.__rows)]
@@ -57,7 +57,7 @@ class Field:
         mine = 0
         while self.__num_mines > mine:
             x, y = random.randint(0, self.__cols - 1), random.randint(0, self.__rows - 1)
-            if abs(x - click_x) > 1 or abs(y - click_y) > 1:
+            if (abs(x - click_x) > 1 or abs(y - click_y) > 1) and not self.__field[y][x].get_is_mine():
                 self.__field_num[y][x] = 1
                 self.__field[y][x].set_is_mine(True)
                 self.__field[y][x].set_cell_image(self.MINE)
@@ -67,6 +67,7 @@ class Field:
             for j in range(self.__cols):
                 sum_mine = 0
                 if self.__field_num[i][j] == 1:
+                    self.__field[i][j].set_cell_image(self.MINE)
                     continue
                 for k in range(-1, 2):
                     for m in range(-1, 2):
@@ -76,16 +77,23 @@ class Field:
                 self.add_sprites(sum_mine, i, j)
 
     def open_cell(self, x, y):
-        if self.__field_num[y][x] == 1:
+        if self.__field[y][x].get_is_fagged():
+            return False
+        elif self.__field_num[y][x] == 1:
             self.__field[y][x].set_is_bombed(True)
             self.__field[y][x].set_is_opened(True)
             self.__field[y][x].set_cell_image(self.MINED)
+            self.open_game_over_cell()
             return True
-        elif self.__field[y][x].get_is_fagged():
-            return False
         else:
             self.open_empty_cell(x, y)
             return False
+
+    def flagging(self, x, y):
+        if not self.__field[y][x].get_is_fagged():
+            self.__field[y][x].set_is_flagged(True)
+        else:
+            self.__field[y][x].set_is_flagged(False)
 
     def add_sprites(self, sum_mine, i, j):
         if sum_mine == 1:
@@ -122,5 +130,14 @@ class Field:
             for j in range(self.__cols):
                 if self.__field[i][j].get_is_opened():
                     summ += 1
-        if sum == self.__cols * self.__rows - self.__num_mines:
+        # print(summ, self.__cols * self.__rows - self.__num_mines)
+        if summ == (self.__cols * self.__rows - self.__num_mines):
             return True
+        else:
+            return False
+
+    def open_game_over_cell(self):
+        for i in range(self.__rows):
+            for j in range(self.__cols):
+                self.__field[i][j].set_is_opened(True)
+
