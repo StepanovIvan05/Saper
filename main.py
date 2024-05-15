@@ -44,7 +44,8 @@ pygame.display.set_caption('Сапер')
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Levels", 40))
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Exit", 40))
 
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Common", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 175, 400, 50, "Square", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Rhombus", 40))
 level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "To menu", 40))
 
 exit_button = button.Button(0, 0, 200, 25, "Go back", 20)
@@ -69,14 +70,20 @@ def create_grid():
 def draw_field():
     for y in range(field.get_rows()):
         for x in range(field.get_cols()):
+            if not field.get_field_form(y + 1, x + 1):
+                continue
             window.blit(field.get_field(x, y), (x * field.get_cell_size() +
                                                 DELTA_WIDTH, y * field.get_cell_size() + DELTA_HEIGHT))
 
 
-def game_process():
+def game_process(i):
+    clock = pygame.time.Clock()
+    elapsed_time = 0
+    running = False
     game_over = False
     win = False
     exit_button.is_pressed = False
+    field.set_field_form(i)
     while not exit_button.is_pressed:
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
@@ -89,6 +96,7 @@ def game_process():
                     if (x >= field.get_rows() or x < 0) or (y >= field.get_cols() or y < 0):
                         continue
                     elif not field.is_generated:
+                        running = True
                         field.generate_field(x, y)
                         game_over = field.open_cell(x, y)
                     else:
@@ -101,11 +109,16 @@ def game_process():
                         continue
                     elif field.is_generated:
                         field.flagging(x, y)
+        if running and not win and not game_over:
+            elapsed_time += clock.get_time() / 1000
         window.blit(background_image, (0, 0))
         exit_button.process(window)
+        text = font.render("Time: {:.2f} sec".format(elapsed_time), True, WHITE)
         window.blit(text, text_rect)
         draw_field()
         pygame.display.flip()
+        clock.tick(60)
+    field.__init__(20, 20, 20)
 
 
 def choice_level():
@@ -113,12 +126,14 @@ def choice_level():
     while not ex:
         levels_screen.display(window)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or level_buttons[1].is_pressed:
-                level_buttons[1].is_pressed = False
+            if event.type == pygame.QUIT or level_buttons[2].is_pressed:
+                level_buttons[2].is_pressed = False
                 ex = True
-            elif level_buttons[0].is_pressed:
-                level_buttons[0].is_pressed = False
-                game_process()
+            else:
+                for i in range(2):
+                    if level_buttons[i].is_pressed:
+                        game_process(i)
+                        level_buttons[i].is_pressed = False
 
         for obj in level_buttons:
             obj.process(window)
