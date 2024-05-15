@@ -24,7 +24,7 @@ WINDOW_HEIGHT = pygame.display.Info().current_h
 text_rect = text.get_rect()
 text_rect.center = (WINDOW_WIDTH // 2, 18)
 
-field = Field(20, 20, 20)
+field = Field(21, 20, 20)
 
 # Смещение в центр
 DELTA_WIDTH = WINDOW_WIDTH // 2 - field.get_game_width() // 2
@@ -44,9 +44,12 @@ pygame.display.set_caption('Сапер')
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Levels", 40))
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Exit", 40))
 
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 175, 400, 50, "Square", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Rhombus", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "To menu", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 275, 400, 50, "Square", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 175, 400, 50, "Rhombus", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Snake", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Circle", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 125, 400, 50, "Heart", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 225, 400, 50, "To menu", 40))
 
 exit_button = button.Button(0, 0, 200, 25, "Go back", 20)
 
@@ -93,7 +96,7 @@ def game_process(i):
                 if game_event.button == 1:
                     x, y = ((game_event.pos[0] - DELTA_WIDTH) // field.get_cell_size(),
                             (game_event.pos[1] - DELTA_HEIGHT) // field.get_cell_size())
-                    if (x >= field.get_rows() or x < 0) or (y >= field.get_cols() or y < 0):
+                    if (y >= field.get_rows() or y < 0) or (x >= field.get_cols() or x < 0):
                         continue
                     elif not field.is_generated:
                         running = True
@@ -118,7 +121,7 @@ def game_process(i):
         draw_field()
         pygame.display.flip()
         clock.tick(60)
-    field.__init__(20, 20, 20)
+    field.__init__(21, 20, 20)
 
 
 def choice_level():
@@ -126,11 +129,11 @@ def choice_level():
     while not ex:
         levels_screen.display(window)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or level_buttons[2].is_pressed:
-                level_buttons[2].is_pressed = False
+            if event.type == pygame.QUIT or level_buttons[5].is_pressed:
+                level_buttons[5].is_pressed = False
                 ex = True
             else:
-                for i in range(2):
+                for i in range(5):
                     if level_buttons[i].is_pressed:
                         game_process(i)
                         level_buttons[i].is_pressed = False
