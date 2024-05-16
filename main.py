@@ -69,6 +69,8 @@ def get_score(i, attempts):
         return
     height = 18
     attempts[get_level_name(i)].sort()
+    if len(attempts[get_level_name(i)]) > 10:
+        attempts[get_level_name(i)] = attempts[get_level_name(i)][:10]
     for score in attempts[get_level_name(i)]:
         height += 36
         text = font.render("{:.2f} sec".format(score), True, WHITE)
