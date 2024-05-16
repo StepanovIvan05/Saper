@@ -13,9 +13,9 @@ class Button:
         self.height = height
         self.is_pressed = False
         self.fillColors = {
-            'normal': '#ffffff',
-            'hover': '#666666',
-            'pressed': '#333333',
+            'normal': '#1e90ff',
+            'hover': '#0000cd',
+            'pressed': '#000080',
         }
 
         self.buttonSurface = pygame.Surface((self.width, self.height))

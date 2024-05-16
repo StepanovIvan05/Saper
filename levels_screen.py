@@ -1,8 +1,8 @@
 import pygame
 
 
-def display(window):
-    window.fill((255, 255, 255))
+def display(window, background_image):
+    window.blit(background_image, (0, 0))
 
 
 class LevelsScreen:

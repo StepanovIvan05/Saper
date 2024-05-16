@@ -1,3 +1,5 @@
+import json
+
 import pygame
 import random
 from field import Field
@@ -14,17 +16,12 @@ BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
 background_image = pygame.image.load('1679767165_7fon-club-p-more-raznikh-tsvetov-21.jpg')
 font = pygame.font.Font(None, 36)
-text = font.render("Время: ", True, WHITE)
 
 # Размеры окна
 WINDOW_WIDTH = pygame.display.Info().current_w
 WINDOW_HEIGHT = pygame.display.Info().current_h
 
-# Положение надписи
-text_rect = text.get_rect()
-text_rect.center = (WINDOW_WIDTH // 2, 18)
-
-field = Field(21, 20, 20)
+field = Field(21, 20, 40)
 
 # Смещение в центр
 DELTA_WIDTH = WINDOW_WIDTH // 2 - field.get_game_width() // 2
@@ -54,6 +51,65 @@ level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 +
 exit_button = button.Button(0, 0, 200, 25, "Go back", 20)
 
 
+# Файл для хранения времени попыток в формате JSON
+file_name = "attempts.json"
+
+
+def get_score(i, attempts):
+
+    text = font.render("Best attempts:", True, WHITE)
+    text_rect = text.get_rect()
+    text_rect.center = (WINDOW_WIDTH - 100, 18)
+    window.blit(text, text_rect)
+    if get_level_name(i) not in attempts:
+        text = font.render("No attempts", True, WHITE)
+        text_rect = text.get_rect()
+        text_rect.center = (WINDOW_WIDTH - 100, 54)
+        window.blit(text, text_rect)
+        return
+    height = 18
+    attempts[get_level_name(i)].sort()
+    for score in attempts[get_level_name(i)]:
+        height += 36
+        text = font.render("{:.2f} sec".format(score), True, WHITE)
+        text_rect = text.get_rect()
+        text_rect.center = (WINDOW_WIDTH - 100, height)
+        window.blit(text, text_rect)
+    return text
+
+
+def get_level_name(i):
+    if i == 0:
+        return 'Square'
+    elif i == 1:
+        return 'Rhombus'
+    elif i == 2:
+        return 'Snake'
+    elif i == 3:
+        return 'Circle'
+    elif i == 4:
+        return 'Heart'
+
+
+# Функция для загрузки данных из файла в словарь
+def load_attempts():
+    attempts = {}
+    try:
+        with open(file_name, "r") as file:
+            data = file.read()
+            if data:  # Проверяем, не пуст ли файл
+                attempts = json.loads(data)
+    except FileNotFoundError:
+        pass  # Если файл не найден, возвращаем пустой словарь
+    return attempts
+
+
+# Функция для сохранения данных из словаря в файл
+def save_attempts(attempts):
+    with open(file_name, "w") as file:
+        json.dump(attempts, file, indent=4)
+
+
 # Функция для создания игрового поля
 def create_grid():
     grid = [[0 for _ in range(field.get_cols())] for _ in range(field.get_rows())]
@@ -75,18 +131,22 @@ def draw_field():
         for x in range(field.get_cols()):
             if not field.get_field_form(y + 1, x + 1):
                 continue
-            window.blit(field.get_field(x, y), (x * field.get_cell_size() +
-                                                DELTA_WIDTH, y * field.get_cell_size() + DELTA_HEIGHT))
+            window.blit(pygame.transform.scale(field.get_field(x, y), (35, 35)), (x * field.get_cell_size()
+                                                                                  + DELTA_WIDTH,
+                                                                                  y * field.get_cell_size() +
+                                                                                  DELTA_HEIGHT))
 
 
-def game_process(i):
+def game_process(i, attempts):
     clock = pygame.time.Clock()
     elapsed_time = 0
+    write_score = False
     running = False
     game_over = False
     win = False
     exit_button.is_pressed = False
     field.set_field_form(i)
+    text = font.render("Time: 0.0", True, WHITE)
     while not exit_button.is_pressed:
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
@@ -114,20 +174,34 @@ def game_process(i):
                         field.flagging(x, y)
         if running and not win and not game_over:
             elapsed_time += clock.get_time() / 1000
+            text = font.render("Time: {:.2f} sec".format(elapsed_time), True, WHITE)
+        elif win:
+            text = font.render("Win! Your time: {:.2f} sec".format(elapsed_time), True, WHITE)
+            if not write_score:
+                if get_level_name(i) not in attempts:
+                    attempts[get_level_name(i)] = []
+                attempts[get_level_name(i)].append(elapsed_time)
+                save_attempts(attempts)
+                write_score = True
+        elif game_over:
+            text = font.render("Loss", True, WHITE)
         window.blit(background_image, (0, 0))
         exit_button.process(window)
-        text = font.render("Time: {:.2f} sec".format(elapsed_time), True, WHITE)
+        # Положение надписи
+        text_rect = text.get_rect()
+        text_rect.center = (WINDOW_WIDTH // 2, 18)
         window.blit(text, text_rect)
+        get_score(i, attempts)
         draw_field()
         pygame.display.flip()
         clock.tick(60)
-    field.__init__(21, 20, 20)
+    field.__init__(21, 20, 40)
 
 
-def choice_level():
+def choice_level(attempts):
     ex = False
     while not ex:
-        levels_screen.display(window)
+        levels_screen.display(window, background_image)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or level_buttons[5].is_pressed:
                 level_buttons[5].is_pressed = False
@@ -135,7 +209,7 @@ def choice_level():
             else:
                 for i in range(5):
                     if level_buttons[i].is_pressed:
-                        game_process(i)
+                        game_process(i, attempts)
                         level_buttons[i].is_pressed = False
 
         for obj in level_buttons:
@@ -145,15 +219,16 @@ def choice_level():
 
 # Основной игровой цикл
 def main():
+    attempts = load_attempts()
     ex = False
     while not ex:
-        registration_screen.display(window)
+        registration_screen.display(window, background_image)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or objects[1].is_pressed:
                 ex = True
             elif objects[0].is_pressed:
                 objects[0].is_pressed = False
-                choice_level()
+                choice_level(attempts)
 
         for obj in objects:
             obj.process(window)

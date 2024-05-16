@@ -136,7 +136,7 @@ class Field:
     FIELD_FORM.append(FORM5)
 
     def __init__(self, rows, cols, num_mines):
-        self.__cell_size = 15
+        self.__cell_size = 35
         self.__num_mines = num_mines
         self.__rows = rows
         self.__cols = cols
