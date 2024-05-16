@@ -1,5 +1,5 @@
 import json
-
+import os
 import pygame
 import random
 from field import Field
@@ -9,6 +9,9 @@ import button
 
 # Инициализация Pygame
 pygame.init()
+
+local_appdata_path = os.getenv('LOCALAPPDATA')
+json_file_path = os.path.join(local_appdata_path, 'attempts.json')
 
 # Определение цветов
 WHITE = (255, 255, 255)
@@ -21,7 +24,7 @@ font = pygame.font.Font(None, 36)
 WINDOW_WIDTH = pygame.display.Info().current_w
 WINDOW_HEIGHT = pygame.display.Info().current_h
 
-field = Field(21, 20, 40)
+field = Field(21, 20, 10)
 
 # Смещение в центр
 DELTA_WIDTH = WINDOW_WIDTH // 2 - field.get_game_width() // 2
@@ -49,10 +52,6 @@ level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 +
 level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 225, 400, 50, "To menu", 40))
 
 exit_button = button.Button(0, 0, 200, 25, "Go back", 20)
-
-
-# Файл для хранения времени попыток в формате JSON
-file_name = "attempts.json"
 
 
 def get_score(i, attempts):
@@ -97,7 +96,7 @@ def get_level_name(i):
 def load_attempts():
     attempts = {}
     try:
-        with open(file_name, "r") as file:
+        with open(json_file_path, "r") as file:
             data = file.read()
             if data:  # Проверяем, не пуст ли файл
                 attempts = json.loads(data)
@@ -108,7 +107,7 @@ def load_attempts():
 
 # Функция для сохранения данных из словаря в файл
 def save_attempts(attempts):
-    with open(file_name, "w") as file:
+    with open(json_file_path, "w") as file:
         json.dump(attempts, file, indent=4)
 
 
@@ -197,7 +196,7 @@ def game_process(i, attempts):
         draw_field()
         pygame.display.flip()
         clock.tick(60)
-    field.__init__(21, 20, 40)
+    field.__init__(21, 20, 10)
 
 
 def choice_level(attempts):
