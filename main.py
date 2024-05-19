@@ -31,14 +31,13 @@ field = Field(ROWS, COLS, NUM_MINES)
 
 # Создание окна
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption('Сапер')
 
 registration_screen = regiatrstion_screen
 levels_screen = levels_screen
 
 objects = []
 level_buttons = []
-
-pygame.display.set_caption('Сапер')
 
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Levels", 40))
 objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Exit", 40))
@@ -119,27 +118,35 @@ def draw_field(delta_width, delta_height):
         for x in range(field.get_cols()):
             if not field.get_field_form(y, x):
                 continue
-            window.blit(pygame.transform.scale(field.get_field(x, y), (field.get_cell_size(), field.get_cell_size())), (x * field.get_cell_size()
-                                                                                  + delta_width,
-                                                                                  y * field.get_cell_size() +
-                                                                                  delta_height))
+            window.blit(
+                pygame.transform.scale(field.get_field(x, y),
+                                       (field.get_cell_size(), field.get_cell_size())),
+                (x * field.get_cell_size() + delta_width, y * field.get_cell_size() + delta_height))
 
 
 def game_process(i, attempts):
+    # Обновление размеров по форме
     field.set_rows(len(field.FIELD_FORM[i]))
     field.set_cols(len(field.FIELD_FORM[i][0]))
     field.set_field_form(i)
+
     # Смещение в центр
     delta_width = WINDOW_WIDTH // 2 - field.get_game_width() // 2
     delta_height = WINDOW_HEIGHT // 2 - field.get_game_height() // 2
+
+    # Аннулирование времени
     clock = pygame.time.Clock()
     elapsed_time = 0
+
+    # Установка начальных значений
     write_score = False
     running = False
     game_over = False
     win = False
     exit_button.is_pressed = False
     text = font.render("Time: 0.0", True, WHITE)
+
+    # Игровой цикл
     while not exit_button.is_pressed:
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
@@ -193,14 +200,15 @@ def game_process(i, attempts):
 
 def choice_level(attempts):
     ex = False
+    size = len(level_buttons) - 1
     while not ex:
         levels_screen.display(window, background_image)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or level_buttons[6].is_pressed:
-                level_buttons[6].is_pressed = False
+            if event.type == pygame.QUIT or level_buttons[size].is_pressed:
+                level_buttons[size].is_pressed = False
                 ex = True
             else:
-                for i in range(6):
+                for i in range(size):
                     if level_buttons[i].is_pressed:
                         game_process(i, attempts)
                         level_buttons[i].is_pressed = False
