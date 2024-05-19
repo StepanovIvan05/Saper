@@ -181,8 +181,8 @@ class Field:
     FIELD_FORM.append(FORM5)
     FIELD_FORM.append(FORM6)
 
-    def __init__(self, rows, cols, num_mines):
-        self.__cell_size = 30
+    def __init__(self, rows, cols, num_mines, cell_size):
+        self.__cell_size = cell_size
         self.__num_mines = num_mines
         self.__rows = rows
         self.__cols = cols
