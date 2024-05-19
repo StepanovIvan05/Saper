@@ -17,7 +17,6 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
 background_image = pygame.image.load('kandinsky-download-1716062799610.png')
-font = pygame.font.Font("images/PIXY.ttf",  WINDOW_HEIGHT // 30)
 
 
 # Размеры окна
@@ -29,8 +28,9 @@ NUM_MINES = 10
 background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 levels_button_width = WINDOW_WIDTH / 4.8
 levels_button_height = WINDOW_HEIGHT / 21.6
+font = pygame.font.Font("images/PIXY.ttf",  WINDOW_HEIGHT // 30)
 
-field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 36)
+field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
 
 
 # Создание окна
@@ -62,12 +62,12 @@ def get_score(i, attempts):
     text = font.render("Best attempts:", True, WHITE)
     text_rect = text.get_rect()
     height = WINDOW_HEIGHT / 60
-    text_rect.center = (WINDOW_WIDTH * 0.95, height)
+    text_rect.center = (WINDOW_WIDTH * 0.9, height)
     window.blit(text, text_rect)
     if get_level_name(i) not in attempts:
         text = font.render("No attempts", True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH * 0.95, height * 3)
+        text_rect.center = (WINDOW_WIDTH * 0.9, height * 3)
         window.blit(text, text_rect)
         return
     attempts[get_level_name(i)].sort()
@@ -77,7 +77,7 @@ def get_score(i, attempts):
         height += WINDOW_HEIGHT / 30
         text = font.render("{:.2f} sec".format(score), True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH * 0.95, height)
+        text_rect.center = (WINDOW_WIDTH * 0.9, height)
         window.blit(text, text_rect)
     return text
 
@@ -199,7 +199,7 @@ def game_process(i, attempts):
         draw_field(delta_width, delta_height)
         pygame.display.flip()
         clock.tick(60)
-    field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 36)
+    field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
 
 
 def choice_level(attempts):
