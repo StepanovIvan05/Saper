@@ -17,7 +17,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
 background_image = pygame.image.load('kandinsky-download-1716062799610.png')
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font("images/PIXY.ttf", 36)
 
 # Размеры окна
 WINDOW_WIDTH = pygame.display.Info().current_w
