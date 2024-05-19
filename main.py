@@ -17,7 +17,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
 background_image = pygame.image.load('1679767165_7fon-club-p-more-raznikh-tsvetov-21.jpg')
-font = pygame.font.Font(None, 36)
+
 
 # Размеры окна
 WINDOW_WIDTH = pygame.display.Info().current_w
@@ -25,8 +25,11 @@ WINDOW_HEIGHT = pygame.display.Info().current_h
 ROWS = 100
 COLS = 100
 NUM_MINES = 10
+levels_button_width = WINDOW_WIDTH / 4.8
+levels_button_height = WINDOW_HEIGHT / 21.6
+font = pygame.font.Font(None, WINDOW_HEIGHT // 30)
 
-field = Field(ROWS, COLS, NUM_MINES)
+field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 36)
 
 
 # Создание окна
@@ -39,41 +42,41 @@ levels_screen = levels_screen
 objects = []
 level_buttons = []
 
-objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Levels", 40))
-objects.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Exit", 40))
+objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.5, levels_button_width, levels_button_height, "Levels", int(levels_button_height * 0.8)))
+objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.5, levels_button_width, levels_button_height, "Exit", int(levels_button_height * 0.8)))
 
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 275, 400, 50, "Square", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 175, 400, 50, "Rhombus", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 - 75, 400, 50, "Snake", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 25, 400, 50, "Circle", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 125, 400, 50, "Heart", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 225, 400, 50, "CBO", 40))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - 200, WINDOW_HEIGHT // 2 + 325, 400, 50, "To menu", 40))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 5.5, levels_button_width, levels_button_height, "Square", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 3.5, levels_button_width, levels_button_height, "Rhombus", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.5, levels_button_width, levels_button_height, "Snake", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.5, levels_button_width, levels_button_height, "Circle", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 2.5, levels_button_width, levels_button_height, "Heart", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 4.5, levels_button_width, levels_button_height, "CBO", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 6.5, levels_button_width, levels_button_height, "To menu", int(levels_button_height * 0.8)))
 
-exit_button = button.Button(0, 0, 200, 25, "Go back", 20)
+exit_button = button.Button(0, 0, levels_button_width / 2, levels_button_height / 2, "Go back", int(levels_button_height * 0.4))
 
 
 def get_score(i, attempts):
 
     text = font.render("Best attempts:", True, WHITE)
     text_rect = text.get_rect()
-    text_rect.center = (WINDOW_WIDTH - 100, 18)
+    height = WINDOW_HEIGHT / 60
+    text_rect.center = (WINDOW_WIDTH * 0.95, height)
     window.blit(text, text_rect)
     if get_level_name(i) not in attempts:
         text = font.render("No attempts", True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH - 100, 54)
+        text_rect.center = (WINDOW_WIDTH * 0.95, height * 3)
         window.blit(text, text_rect)
         return
-    height = 18
     attempts[get_level_name(i)].sort()
-    if len(attempts[get_level_name(i)]) > 10:
-        attempts[get_level_name(i)] = attempts[get_level_name(i)][:10]
+    if len(attempts[get_level_name(i)]) > 5:
+        attempts[get_level_name(i)] = attempts[get_level_name(i)][:5]
     for score in attempts[get_level_name(i)]:
-        height += 36
+        height += WINDOW_HEIGHT / 30
         text = font.render("{:.2f} sec".format(score), True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH - 100, height)
+        text_rect.center = (WINDOW_WIDTH * 0.95, height)
         window.blit(text, text_rect)
     return text
 
@@ -189,13 +192,13 @@ def game_process(i, attempts):
         exit_button.process(window)
         # Положение надписи
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH // 2, 18)
+        text_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT / 60)
         window.blit(text, text_rect)
         get_score(i, attempts)
         draw_field(delta_width, delta_height)
         pygame.display.flip()
         clock.tick(60)
-    field.__init__(ROWS, COLS, NUM_MINES)
+    field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 36)
 
 
 def choice_level(attempts):
