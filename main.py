@@ -16,7 +16,7 @@ json_file_path = os.path.join(local_appdata_path, 'attempts.json')
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
-background_image = pygame.image.load('1679767165_7fon-club-p-more-raznikh-tsvetov-21.jpg')
+background_image = pygame.image.load('kandinsky-download-1716062799610.png')
 font = pygame.font.Font(None, 36)
 
 # Размеры окна
@@ -25,6 +25,7 @@ WINDOW_HEIGHT = pygame.display.Info().current_h
 ROWS = 100
 COLS = 100
 NUM_MINES = 10
+background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 field = Field(ROWS, COLS, NUM_MINES)
 
