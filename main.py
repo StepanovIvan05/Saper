@@ -1,10 +1,12 @@
 import json
 import os
+
 import pygame
 from field import Field
 import regiatrstion_screen
 import levels_screen
 import button
+from popup_window import PopupWindow
 
 # Инициализация Pygame
 pygame.init()
@@ -17,6 +19,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
 background_image = pygame.image.load('kandinsky-download-1716062799610.png')
+background_game_image = pygame.image.load('photo_2024-05-23_16-29-22.jpg')
 
 
 # Размеры окна
@@ -26,8 +29,9 @@ ROWS = 100
 COLS = 100
 NUM_MINES = 10
 background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
+background_game_image = pygame.transform.scale(background_game_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 levels_button_width = WINDOW_WIDTH / 4.8
-levels_button_height = WINDOW_HEIGHT / 21.6
+levels_button_height = WINDOW_HEIGHT / 15
 font = pygame.font.Font("images/PIXY.ttf",  WINDOW_HEIGHT // 30)
 
 field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
@@ -43,18 +47,19 @@ levels_screen = levels_screen
 objects = []
 level_buttons = []
 
-objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.5, levels_button_width, levels_button_height, "Levels", int(levels_button_height * 0.8)))
-objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.5, levels_button_width, levels_button_height, "Exit", int(levels_button_height * 0.8)))
+objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.125, levels_button_width, levels_button_height, "Levels", int(levels_button_height * 0.8)))
+objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.125, levels_button_width, levels_button_height, "Exit", int(levels_button_height * 0.8)))
 
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 5.5, levels_button_width, levels_button_height, "Square", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 3.5, levels_button_width, levels_button_height, "Rhombus", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.5, levels_button_width, levels_button_height, "Snake", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.5, levels_button_width, levels_button_height, "Circle", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 2.5, levels_button_width, levels_button_height, "Heart", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 4.5, levels_button_width, levels_button_height, "CBO", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 6.5, levels_button_width, levels_button_height, "To menu", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 3.75, levels_button_width, levels_button_height, "Square", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 2.5, levels_button_width, levels_button_height, "Rhombus", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.25, levels_button_width, levels_button_height, "Snake", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0, levels_button_width, levels_button_height, "Circle", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 1.25, levels_button_width, levels_button_height, "Heart", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 2.5, levels_button_width, levels_button_height, "CBO", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 3.75, levels_button_width, levels_button_height, "To menu", int(levels_button_height * 0.8)))
 
 exit_button = button.Button(0, 0, levels_button_width / 2, levels_button_height / 2, "Go back", int(levels_button_height * 0.4))
+restart_button = button.Button(0, levels_button_height * 1.25 / 2, levels_button_width / 2, levels_button_height / 2, "Restart", int(levels_button_height * 0.4))
 
 
 def get_score(i, attempts):
@@ -148,34 +153,48 @@ def game_process(i, attempts):
     game_over = False
     win = False
     exit_button.is_pressed = False
+    restart_button.is_pressed = False
     text = font.render("Time: 0.0", True, WHITE)
-
+    is_end = False
+    popup = PopupWindow(window, "Game over!", WINDOW_WIDTH, WINDOW_HEIGHT)
+    restart = 0
+    ex = False
+    is_pressed = False
     # Игровой цикл
-    while not exit_button.is_pressed:
+    while not ex:
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
-                game_over = True
                 pygame.quit()
-            elif game_event.type == pygame.MOUSEBUTTONDOWN and not game_over and not win:
-                if game_event.button == 1:
-                    x, y = ((game_event.pos[0] - delta_width) // field.get_cell_size(),
-                            (game_event.pos[1] - delta_height) // field.get_cell_size())
-                    if (y >= field.get_rows() or y < 0) or (x >= field.get_cols() or x < 0):
-                        continue
-                    elif not field.is_generated:
-                        running = True
-                        field.generate_field(x, y)
-                        game_over = field.open_cell(x, y)
-                    else:
-                        game_over = field.open_cell(x, y)
-                    win = field.num_open_cell()
-                elif game_event.button == 3:
-                    x, y = ((game_event.pos[0] - delta_width) // field.get_cell_size(),
-                            (game_event.pos[1] - delta_height) // field.get_cell_size())
-                    if (y >= field.get_rows() or y < 0) or (x >= field.get_cols() or x < 0):
-                        continue
-                    elif field.is_generated:
-                        field.flagging(x, y)
+            if game_event.type == pygame.MOUSEBUTTONDOWN:
+                is_pressed = True
+            if game_event.type == pygame.MOUSEBUTTONUP and is_pressed:
+                restart = popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
+                if exit_button.is_pressed and exit_button.buttonRect.collidepoint(pygame.mouse.get_pos()):
+                    ex = True
+                if restart_button.is_pressed and restart_button.buttonRect.collidepoint(pygame.mouse.get_pos()):
+                    restart = 1
+
+                if not win and not game_over:
+                    if game_event.button == 1:
+                        x, y = ((game_event.pos[0] - delta_width) // field.get_cell_size(),
+                                (game_event.pos[1] - delta_height) // field.get_cell_size())
+                        if field.get_field_form(y, x) == 0:
+                            continue
+                        elif not field.is_generated:
+                            running = True
+                            field.generate_field(x, y)
+                            game_over = field.open_cell(x, y)
+                        else:
+                            game_over = field.open_cell(x, y)
+                        win = field.num_open_cell()
+                    elif game_event.button == 3:
+                        x, y = ((game_event.pos[0] - delta_width) // field.get_cell_size(),
+                                (game_event.pos[1] - delta_height) // field.get_cell_size())
+                        if (y >= field.get_rows() or y < 0) or (x >= field.get_cols() or x < 0):
+                            continue
+                        elif field.is_generated:
+                            field.flagging(x, y)
+                    is_pressed = False
         if running and not win and not game_over:
             elapsed_time += clock.get_time() / 1000
             text = font.render("Time: {:.2f} sec".format(elapsed_time), True, WHITE)
@@ -189,31 +208,50 @@ def game_process(i, attempts):
                 write_score = True
         elif game_over:
             text = font.render("Loss", True, WHITE)
-        window.blit(background_image, (0, 0))
+        if win and not is_end:
+            popup.show()
+            is_end = True
+        window.blit(background_game_image, (0, 0))
         exit_button.process(window)
+        restart_button.process(window)
         # Положение надписи
         text_rect = text.get_rect()
         text_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT / 60)
         window.blit(text, text_rect)
         get_score(i, attempts)
         draw_field(delta_width, delta_height)
+        popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
         pygame.display.flip()
         clock.tick(60)
+        if restart:
+            if restart == 3:
+                popup.visible = False
+            else:
+                break
     field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
+    if restart == 1:
+        game_process(i, attempts)
 
 
 def choice_level(attempts):
     ex = False
     size = len(level_buttons) - 1
+    is_pressed = False
     while not ex:
         levels_screen.display(window, background_image)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or level_buttons[size].is_pressed:
+            if event.type == pygame.QUIT:
                 level_buttons[size].is_pressed = False
                 ex = True
-            else:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                is_pressed = True
+
+            elif event.type == pygame.MOUSEBUTTONUP and is_pressed:
+                if level_buttons[size].is_pressed and level_buttons[size].buttonRect.collidepoint(pygame.mouse.get_pos()):
+                    level_buttons[size].is_pressed = False
+                    ex = True
                 for i in range(size):
-                    if level_buttons[i].is_pressed:
+                    if level_buttons[i].is_pressed and level_buttons[i].buttonRect.collidepoint(pygame.mouse.get_pos()):
                         game_process(i, attempts)
                         level_buttons[i].is_pressed = False
 
@@ -226,14 +264,20 @@ def choice_level(attempts):
 def main():
     attempts = load_attempts()
     ex = False
+    is_pressed = False
     while not ex:
         registration_screen.display(window, background_image)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or objects[1].is_pressed:
+            if event.type == pygame.QUIT:
                 ex = True
-            elif objects[0].is_pressed:
-                objects[0].is_pressed = False
-                choice_level(attempts)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                is_pressed = True
+            if event.type == pygame.MOUSEBUTTONUP and is_pressed:
+                if objects[0].is_pressed and objects[0].buttonRect.collidepoint(pygame.mouse.get_pos()):
+                    objects[0].is_pressed = False
+                    choice_level(attempts)
+                if objects[1].is_pressed and objects[1].buttonRect.collidepoint(pygame.mouse.get_pos()):
+                    ex = True
 
         for obj in objects:
             obj.process(window)
