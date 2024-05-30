@@ -168,7 +168,10 @@ def game_process(i, attempts):
             if game_event.type == pygame.MOUSEBUTTONDOWN:
                 is_pressed = True
             if game_event.type == pygame.MOUSEBUTTONUP and is_pressed:
-                restart = popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
+                if get_level_name(i) in attempts:
+                    restart = popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
+                else:
+                    restart = popup.draw(win, elapsed_time, "No results")
                 if exit_button.is_pressed and exit_button.buttonRect.collidepoint(pygame.mouse.get_pos()):
                     ex = True
                 if restart_button.is_pressed and restart_button.buttonRect.collidepoint(pygame.mouse.get_pos()):
@@ -220,7 +223,10 @@ def game_process(i, attempts):
         window.blit(text, text_rect)
         get_score(i, attempts)
         draw_field(delta_width, delta_height)
-        popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
+        if get_level_name(i) in attempts:
+            popup.draw(win, elapsed_time, attempts[get_level_name(i)][0])
+        else:
+            popup.draw(win, elapsed_time, "No results")
         pygame.display.flip()
         clock.tick(60)
         if restart:

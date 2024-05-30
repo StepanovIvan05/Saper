@@ -44,7 +44,10 @@ class PopupWindow:
                 lines.append('Your time: {:.2f} sec'.format(time))
             else:
                 lines.append('Failed attempt')
-            lines.append("Best time: {:.2f} sec".format(best_time))
+            if best_time == "No results":
+                lines.append(best_time)
+            else:
+                lines.append("Best time: {:.2f} sec".format(best_time))
             y_offset = self.y + self.screen_height // 40
             for line in lines:
                 text_surface = self.font.render(line, True, self.text_color)
