@@ -27,7 +27,7 @@ WINDOW_WIDTH = pygame.display.Info().current_w
 WINDOW_HEIGHT = pygame.display.Info().current_h
 ROWS = 100
 COLS = 100
-NUM_MINES = 10
+NUM_MINES = 1
 background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 background_game_image = pygame.transform.scale(background_game_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 levels_button_width = WINDOW_WIDTH / 4.8
@@ -156,7 +156,7 @@ def game_process(i, attempts):
     restart_button.is_pressed = False
     text = font.render("Time: 0.0", True, WHITE)
     is_end = False
-    popup = PopupWindow(window, "Game over!", WINDOW_WIDTH, WINDOW_HEIGHT)
+    popup = PopupWindow(window, "You win!", WINDOW_WIDTH, WINDOW_HEIGHT)
     restart = 0
     ex = False
     is_pressed = False
