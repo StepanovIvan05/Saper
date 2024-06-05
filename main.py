@@ -18,28 +18,32 @@ json_file_path = os.path.join(local_appdata_path, 'attempts.json')
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (192, 192, 192)
-background_image = pygame.image.load('kandinsky-download-1716062799610.png')
-background_game_image = pygame.image.load('photo_2024-05-23_16-29-22.jpg')
+background_image = pygame.image.load('photo_2024-05-25_01-03-41.png')
+background_game_image = pygame.image.load('photo_2024-05-23_16-29-22.png')
 
 
 # Размеры окна
-WINDOW_WIDTH = pygame.display.Info().current_w
-WINDOW_HEIGHT = pygame.display.Info().current_h
+REAL_WIDTH = WINDOW_WIDTH = pygame.display.Info().current_w
+REAL_HEIGHT = WINDOW_HEIGHT = pygame.display.Info().current_h
 ROWS = 100
 COLS = 100
 NUM_MINES = 1
 background_image = pygame.transform.scale(background_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 background_game_image = pygame.transform.scale(background_game_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
-levels_button_width = WINDOW_WIDTH / 4.8
-levels_button_height = WINDOW_HEIGHT / 15
-font = pygame.font.Font("images/PIXY.ttf",  WINDOW_HEIGHT // 30)
-
-field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
-
 
 # Создание окна
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Сапер')
+
+if WINDOW_HEIGHT < WINDOW_WIDTH / 1.77777:
+    WINDOW_WIDTH = WINDOW_HEIGHT * 1.77777
+else:
+    WINDOW_HEIGHT = WINDOW_WIDTH / 1.77777
+levels_button_width = WINDOW_WIDTH / 4.8
+levels_button_height = WINDOW_HEIGHT / 15
+font = pygame.font.Font("images/PIXY.ttf",  int(WINDOW_HEIGHT / 30))
+
+field = Field(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 30)
 
 registration_screen = regiatrstion_screen
 levels_screen = levels_screen
@@ -47,16 +51,16 @@ levels_screen = levels_screen
 objects = []
 level_buttons = []
 
-objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.125, levels_button_width, levels_button_height, "Levels", int(levels_button_height * 0.8)))
-objects.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0.125, levels_button_width, levels_button_height, "Exit", int(levels_button_height * 0.8)))
+objects.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 - levels_button_height * 1.125, levels_button_width, levels_button_height, "Levels", int(levels_button_height * 0.8)))
+objects.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 + levels_button_height * 0.125, levels_button_width, levels_button_height, "Exit", int(levels_button_height * 0.8)))
 
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 3.75, levels_button_width, levels_button_height, "Square", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 2.5, levels_button_width, levels_button_height, "Rhombus", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 - levels_button_height * 1.25, levels_button_width, levels_button_height, "Snake", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 0, levels_button_width, levels_button_height, "Circle", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 1.25, levels_button_width, levels_button_height, "Heart", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 2.5, levels_button_width, levels_button_height, "CBO", int(levels_button_height * 0.8)))
-level_buttons.append(button.Button(WINDOW_WIDTH // 2 - levels_button_width / 2, WINDOW_HEIGHT // 2 + levels_button_height * 3.75, levels_button_width, levels_button_height, "To menu", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 - levels_button_height * 3.75, levels_button_width, levels_button_height, "Square", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 - levels_button_height * 2.5, levels_button_width, levels_button_height, "Rhombus", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 - levels_button_height * 1.25, levels_button_width, levels_button_height, "Snake", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 + levels_button_height * 0, levels_button_width, levels_button_height, "Circle", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 + levels_button_height * 1.25, levels_button_width, levels_button_height, "Heart", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 + levels_button_height * 2.5, levels_button_width, levels_button_height, "Z", int(levels_button_height * 0.8)))
+level_buttons.append(button.Button(REAL_WIDTH // 2 - levels_button_width / 2, REAL_HEIGHT // 2 + levels_button_height * 3.75, levels_button_width, levels_button_height, "To menu", int(levels_button_height * 0.8)))
 
 exit_button = button.Button(0, 0, levels_button_width / 2, levels_button_height / 2, "Go back", int(levels_button_height * 0.4))
 restart_button = button.Button(0, levels_button_height * 1.25 / 2, levels_button_width / 2, levels_button_height / 2, "Restart", int(levels_button_height * 0.4))
@@ -67,12 +71,12 @@ def get_score(i, attempts):
     text = font.render("Best attempts:", True, WHITE)
     text_rect = text.get_rect()
     height = WINDOW_HEIGHT / 60
-    text_rect.center = (WINDOW_WIDTH * 0.9, height)
+    text_rect.center = (REAL_WIDTH * 0.9, height)
     window.blit(text, text_rect)
     if get_level_name(i) not in attempts:
         text = font.render("No attempts", True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH * 0.9, height * 3)
+        text_rect.center = (REAL_WIDTH * 0.9, height * 3)
         window.blit(text, text_rect)
         return
     attempts[get_level_name(i)].sort()
@@ -82,7 +86,7 @@ def get_score(i, attempts):
         height += WINDOW_HEIGHT / 30
         text = font.render("{:.2f} sec".format(score), True, WHITE)
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH * 0.9, height)
+        text_rect.center = (REAL_WIDTH * 0.9, height)
         window.blit(text, text_rect)
     return text
 
@@ -140,8 +144,8 @@ def game_process(i, attempts):
     field.set_field_form(i)
 
     # Смещение в центр
-    delta_width = WINDOW_WIDTH // 2 - field.get_game_width() // 2
-    delta_height = WINDOW_HEIGHT // 2 - field.get_game_height() // 2
+    delta_width = REAL_WIDTH // 2 - field.get_game_width() // 2
+    delta_height = REAL_HEIGHT // 2 - field.get_game_height() // 2
 
     # Аннулирование времени
     clock = pygame.time.Clock()
@@ -156,7 +160,7 @@ def game_process(i, attempts):
     restart_button.is_pressed = False
     text = font.render("Time: 0.0", True, WHITE)
     is_end = False
-    popup = PopupWindow(window, "You win!", WINDOW_WIDTH, WINDOW_HEIGHT)
+    popup = PopupWindow(window, "You win!", WINDOW_WIDTH, WINDOW_HEIGHT, REAL_WIDTH, REAL_HEIGHT)
     restart = 0
     ex = False
     is_pressed = False
@@ -179,8 +183,8 @@ def game_process(i, attempts):
 
                 if not win and not game_over:
                     if game_event.button == 1:
-                        x, y = ((game_event.pos[0] - delta_width) // field.get_cell_size(),
-                                (game_event.pos[1] - delta_height) // field.get_cell_size())
+                        x, y = (int((game_event.pos[0] - delta_width) / field.get_cell_size()),
+                                int((game_event.pos[1] - delta_height) / field.get_cell_size()))
                         if field.get_field_form(y, x) == 0:
                             continue
                         elif not field.is_generated:
@@ -219,7 +223,7 @@ def game_process(i, attempts):
         restart_button.process(window)
         # Положение надписи
         text_rect = text.get_rect()
-        text_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT / 60)
+        text_rect.center = (REAL_WIDTH // 2, REAL_HEIGHT / 60)
         window.blit(text, text_rect)
         get_score(i, attempts)
         draw_field(delta_width, delta_height)
@@ -234,7 +238,7 @@ def game_process(i, attempts):
                 popup.visible = False
             else:
                 break
-    field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 40)
+    field.__init__(ROWS, COLS, NUM_MINES, WINDOW_HEIGHT // 30)
     if restart == 1:
         game_process(i, attempts)
 
@@ -244,7 +248,8 @@ def choice_level(attempts):
     size = len(level_buttons) - 1
     is_pressed = False
     while not ex:
-        levels_screen.display(window, background_image)
+        # levels_screen.display(window, background_image)
+        window.blit(background_image, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 level_buttons[size].is_pressed = False
@@ -271,23 +276,27 @@ def main():
     attempts = load_attempts()
     ex = False
     is_pressed = False
-    while not ex:
-        registration_screen.display(window, background_image)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                ex = True
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                is_pressed = True
-            if event.type == pygame.MOUSEBUTTONUP and is_pressed:
-                if objects[0].is_pressed and objects[0].buttonRect.collidepoint(pygame.mouse.get_pos()):
-                    objects[0].is_pressed = False
-                    choice_level(attempts)
-                if objects[1].is_pressed and objects[1].buttonRect.collidepoint(pygame.mouse.get_pos()):
+    try:
+        while not ex:
+            # registration_screen.display(window, background_image)
+            window.blit(background_image, (0, 0))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     ex = True
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    is_pressed = True
+                if event.type == pygame.MOUSEBUTTONUP and is_pressed:
+                    if objects[0].is_pressed and objects[0].buttonRect.collidepoint(pygame.mouse.get_pos()):
+                        objects[0].is_pressed = False
+                        choice_level(attempts)
+                    if objects[1].is_pressed and objects[1].buttonRect.collidepoint(pygame.mouse.get_pos()):
+                        ex = True
 
-        for obj in objects:
-            obj.process(window)
-        pygame.display.flip()
+            for obj in objects:
+                obj.process(window)
+            pygame.display.flip()
+    except:
+        pygame.quit()
 
     pygame.quit()
 

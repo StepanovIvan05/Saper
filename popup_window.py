@@ -8,30 +8,30 @@ BLUE = (0, 0, 255)
 
 
 class PopupWindow:
-    def __init__(self, screen, message, width, height):
+    def __init__(self, screen, message, width, height, real_width, real_height):
         self.screen = screen
         self.message = message
-        self.font = pygame.font.Font("images/PIXY.ttf", height // 40)
+        self.font = pygame.font.Font("images/PIXY.ttf", int(height // 40))
         self.background_color = WHITE
         self.text_color = BLACK
         self.border_color = BLACK
-        self.screen_width = width
+        self.screen_width = real_width
         self.screen_height = height
-        self.width = width / 5 - 30
+        self.width = width / 5.1
         self.height = height / 2.5
-        self.x = (width - self.width) // 2
-        self.y = (height - self.height) // 2
+        self.x = (real_width - self.width) // 2
+        self.y = (real_height - self.height) // 2
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.visible = False
-        self.background_image = pygame.image.load("images/pixphon2.png")
+        self.background_image = pygame.image.load("images/pixphon5.png")
         self.background_image = pygame.transform.scale(self.background_image, (self.width, self.height))
-        self.restart_button = Button(self.x * 1.05, self.y * 1.7 + 20, width / 7, height / 25, "Restart",
-                                     height * 6 // 250)
+        self.restart_button = Button(self.x + self.width * 0.14, self.y + self.height * 0.57, width / 7, height / 25, "Restart",
+                                     int(height * 6 // 250))
         # self.restart_button.image1 = pygame.transform.scale(pygame.image.load("images/sqt0.png"), (self.width, self.height))
-        self.to_levels_button = Button(self.x * 1.05, self.y * 1.9 + 15, width / 7, height / 25, "To levels",
-                                       height * 6 // 250)
-        self.close_button = Button(self.x * 1.05, self.y * 2.1 + 10, width / 7, height / 25, "open field",
-                                   height * 6 // 250)
+        self.to_levels_button = Button(self.x + self.width * 0.14, self.y + self.height * 0.7, width / 7, height / 25, "To levels",
+                                       int(height * 6 // 250))
+        self.close_button = Button(self.x + self.width * 0.14, self.y + self.height * 0.83, width / 7, height / 25, "open field",
+                                   int(height * 6 // 250))
 
     def show(self):
         self.visible = True
@@ -56,7 +56,7 @@ class PopupWindow:
                 lines.append(best_time)
             else:
                 lines.append("Best time: {:.2f} sec".format(best_time))
-            y_offset = self.y + self.screen_height // 40 + 55
+            y_offset = self.y + self.screen_height // 15
             for line in lines:
                 text_surface = self.font.render(line, True, self.text_color)
                 text_rect = text_surface.get_rect(center=(self.screen_width // 2, y_offset))
